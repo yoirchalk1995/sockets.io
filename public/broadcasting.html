@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>socket.io test</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+  <h1>Welcome to sockets.io</h1>
+  <input type="text" id="messageInput" placeholder="type broadcast">
+  <button id="sendButton">Send Broadcast</button>
+  <ul id="messagesList"></ul>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    socket.on('connect', () => {
+      console.log('Connected to server with ID:', socket.id);
+    });
+
+    socket.on('disconnect', () => {
+      console.log('Disconnected from server:', socket.id);
+    });
+
+    document.getElementById('sendButton').addEventListener('click', () => {
+      const msg = document.getElementById('messageInput').value
+      socket.emit('sendMessage', msg)
+    })
+
+    socket.on('newMessage', (msg) => {
+      const messagesList = document.getElementById('messagesList');
+      const newMessage = document.createElement('li');
+      newMessage.textContent = msg;
+      messagesList.appendChild(newMessage);
+    })
+  </script>
+
+</body>
+
+</html>

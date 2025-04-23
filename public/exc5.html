@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Exercise Four - user typing...</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+  <h1>Exercise 5</h1>
+  <p>Choose room:</p>
+  <form action="">
+    <label for="room1">Room 1</label>
+
+    <input type="radio" name="room" id="room1" value="room1">
+    <label for="room2">Room 2</label>
+    <input type="radio" name="room" id="room2" value="room2">
+    <label for="room3">Room 3</label>
+    <input type="radio" name="room" id="room3" value="room3">
+  </form>
+  <button id="submitBtn">Select Room</button>
+
+  <p>type message here</p>
+  <input type="text" id="msgInput">
+  <button id="sendMsg">Send Message</button>
+
+  <p>Message received:</p>
+  <p id="receivedMessage"></p>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    let roomSelected = false;
+    let roomNumber = 0;
+    const socket = io();
+    const button = document.getElementById('submitBtn')
+    const msgInput = document.getElementById('msgInput')
+    const sendMsgBtn = document.getElementById('sendMsg')
+    const receivedMessage = document.getElementById('receivedMessage')
+
+    button.addEventListener('click', () => {
+      const selectedButton = document.querySelector('input[name="room"]:checked')
+      if (!selectedButton) return console.log('No room selected. Must select room to continue.')
+
+      roomSelected = true;
+      roomNumber = selectedButton.value
+      socket.emit('roomSelected', roomNumber)
+    })
+
+    sendMsgBtn.addEventListener('click', () => {
+      text = msgInput.value
+      socket.emit('sendMsg', ({ roomNumber, text }))
+      msgInput.innerText = ``
+    })
+
+    socket.on('receiveMsg', ({ text, id }) => {
+      receivedMessage.innerText = `${id} sent : ${text}`
+    })
+
+  </script>
+</body>
+
+</html>

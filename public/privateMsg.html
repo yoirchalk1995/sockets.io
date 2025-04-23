@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Private Messaging</title>
+</head>
+
+<body>
+  <h1>Private Messaging</h1>
+
+  <p>Your socket ID: <span id="myId">loading...</span></p>
+
+  <label for="targetId">Recipient ID:</label>
+  <input type="text" id="targetId" placeholder="Paste recipient ID">
+  <br><br>
+
+  <label for="privateMsg">Message:</label>
+  <input type="text" id="privateMsg" placeholder="Type your message">
+  <br><br>
+
+  <button id="sendBtn">Send Private Message</button>
+
+  <ul id="messages"></ul>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    let myId = null;
+
+    const myIdEl = document.getElementById('myId');
+    const targetIdEl = document.getElementById('targetId');
+    const messageEl = document.getElementById('privateMsg');
+    const sendBtn = document.getElementById('sendBtn');
+    const messagesList = document.getElementById('messages');
+
+    socket.on('your_id', (id) => {
+      myId = id;
+      myIdEl.textContent = id;
+    });
+
+    socket.on('private_message', ({ from, message }) => {
+      const item = document.createElement('li');
+      item.textContent = `From ${from}: ${message}`;
+      messagesList.appendChild(item);
+    });
+
+    sendBtn.addEventListener('click', () => {
+      const to = targetIdEl.value;
+
+      const message = messageEl.value;
+
+      if (!to || !message) return;
+
+      socket.emit('sendMessage', { targetId: to, message });
+
+      const item = document.createElement('li');
+      item.textContent = `I sent a message to ${to}: ${message}`;
+      messagesList.appendChild(item);
+
+      messageEl.value = '';
+    });
+  </script>
+</body>
+
+</html>

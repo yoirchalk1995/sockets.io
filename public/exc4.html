@@ -5,11 +5,37 @@
   <title>Exercise Four - user typing...</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
 </head>
 
 <body>
+  <h1>Exercise 4</h1>
+  <input type="text" id="text-input" placeholder="type here">
+  <p id="isTyping"></p>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const textInput = document.getElementById('text-input')
+    const isTyping = document.getElementById('isTyping')
 
+    let timeout;
+
+    textInput.addEventListener('input', () => {
+      socket.emit('typing')
+
+      clearTimeout(timeout);
+
+      timeout = setTimeout(() => {
+        socket.emit('endTyping')
+      }, 500)
+    })
+
+    socket.on('isTyping', (id) => {
+      isTyping.innerText = `user with id ${id} is typing`
+    })
+    socket.on('endTyping', (id) => {
+      isTyping.innerText = ``
+    })
+  </script>
 </body>
 
 </html>

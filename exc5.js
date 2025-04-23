@@ -2,12 +2,17 @@ const express = require("express");
 const { Server } = require("socket.io");
 const path = require("path");
 const http = require("http");
+const { send } = require("process");
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
 app.use(express.static(path.join(__dirname, "public")));
+
+app.get("/healthcheck", (req, res) => {
+  res.send("OK");
+});
 
 app.get("/exc5", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "exc5.html"));
